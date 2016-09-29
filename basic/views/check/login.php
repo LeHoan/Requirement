@@ -14,3 +14,4 @@ $this->params['breadcrumbs'][] = $this->title;
 	<?= Html::submitButton('Login', ['class' =>'btn btn-primary']) ?>
 	</div>
 <?php ActiveForm::end() ?>
+<?= Yii::$app->session->getFlash('error'); ?>

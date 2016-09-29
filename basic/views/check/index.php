@@ -1,16 +1,20 @@
 <?php
 use yii\helpers\Html;
 use yii\widgets\LinkPager;
+use yii\grid\GridView;
+
+$this->title = 'Time of logs';
 ?>
-<h1>Check times of <?php Yii::$app->request->get('name') ?></h1>
+Time logs of <?php echo Yii::$app->request->get('name') ?>
+<form method="post">
 <ul>
 <?php foreach ($list_check as $row): ?>
     <li>
-        <?php echo $row['date'] ?>
-	<?php echo $row['checkin'] ?>
-	<?php echo $row['checkout'] ?>
+        <?php echo "Date: ".$row['date'] ?>
+	<?php echo "In time: ".$row['checkin'] ?>
+	<?php echo "Out time: ".$row['checkout'] ?>
     </li>
 <?php endforeach; ?>
+	<input type="submit" name="btnBack" value="Back">
 </ul>
-
-<?= LinkPager::widget(['pagination' => $pagination]) ?>
+</form>
