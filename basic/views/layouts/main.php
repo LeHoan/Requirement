@@ -39,9 +39,13 @@ AppAsset::register($this);
             ['label' => 'Home', 'url' => ['/site/index']],
             ['label' => 'About', 'url' => ['/site/about']],
             ['label' => 'Contact', 'url' => ['/site/contact']],
+<<<<<<< HEAD
 	    ['label' => 'Registration', 'url' => ['/site/registration']],
 	    ['label' => 'ShowTime', 'url' => ['/site/show-time']],
 	    
+=======
+	    ['label' => 'Login Page', 'url' => ['/check/login']],
+>>>>>>> 916671da31448f69ab0e737f8f52ad9583c482ab
             Yii::$app->user->isGuest ? (
                 ['label' => 'Login', 'url' => ['/site/login']]
             ) : (
