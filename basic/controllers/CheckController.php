@@ -70,18 +70,42 @@ class CheckController extends Controller
 				return $this->render('login',['model' => $model]);
 					}	
 		}else{
-	//var_dump($session->get('user'));die();
 	if($session->get('user') == null){
 	return $this->render('login',['model' => $model]);
 	}else{
-	//var_dump($session->get('role'));die();
 	if( $session->get('role')== 1) 
 	{return $this->redirect('index.php?r=check%2Fadmin');}
 					else if($session->get('role') == 0) {return $this->redirect('index.php?r=check%2Findex');}}}
 	}
 	public function actionAdmin()
 	{
-	return $this->render('admin');
+	$session = Yii::$app->session;
+	$name = $session->get('user');
+	$id = $session->get('id');
+	if(isset($_POST["btnCheck"])){
+		$query = Yii::$app->db->createCommand('Select * From timestamps 
+			Inner join account On account.id = timestamps.id where date = curdate() And account.user="'.$name.'"')->queryAll();
+				if($query == null){
+				return $this->redirect('index.php?r=check%2Fconfirm_in');
+				}else{
+					if($query[0]["checkout"] == null){
+					return $this->redirect('index.php?r=check%2Fconfirm_out');
+						}else{
+							echo "You  can't checkout second time";
+						}
+					
+					}
+	}else{
+	$query = Yii::$app->db->createCommand('Select timestamps.date,timestamps.checkin,timestamps.checkout From timestamps 
+			Inner join account On account.id = timestamps.id And account.user="'.$name.'"')->queryAll();
+	
+        $list_check = $query;
+	
+        return $this->render('admin', [
+            'list_check' => $list_check,
+        ]);
+	}
+
 	}
 	
 	public function actionLogout()
@@ -90,6 +114,8 @@ class CheckController extends Controller
 	if($session->get('user') != null){
 	$session->destroy();
 	return $this->redirect('index.php?r=check%2Flogin');
+	}else{
+	return $this->redirect('index.php?r=check%2Flogin');
 	}
 	}
 	
@@ -97,6 +123,8 @@ class CheckController extends Controller
 	$session = Yii::$app->session;
 	$name = $session->get('user');
 	$id = $session->get('id');
+	$role = $session->get('role');
+		if($role == 0){
 		if(isset($_POST["btnYes"])){
 		$query = Yii::$app->db->createCommand('Insert into timestamps values('.$id.',curdate(),curtime(),null)')->execute();
 		return $this->redirect('index.php?r=check%2Findex');
@@ -105,12 +133,24 @@ class CheckController extends Controller
 		}else{
 		return $this->render('confirm_in');
 		}
+		}else{
+			if(isset($_POST["btnYes"])){
+		$query = Yii::$app->db->createCommand('Insert into timestamps values('.$id.',curdate(),curtime(),null)')->execute();
+		return $this->redirect('index.php?r=check%2Fadmin');
+		}else if(isset($_POST["btnNo"])){
+		return $this->redirect('index.php?r=check%2Fadmin');
+		}else{
+		return $this->render('confirm_in');
+		}
+		}
 	}
 	
 	public function actionConfirm_out(){
 	$session = Yii::$app->session;
 	$name = $session->get('user');
 	$id = $session->get('id');
+	$role = $session->get('role');
+		if($role == 0){
 		if(isset($_POST["btnYes"])){
 		$query = Yii::$app->db->createCommand('Update timestamps set checkout = curtime() where date = curdate()')->execute();
 		return $this->redirect('index.php?r=check%2Findex');
@@ -119,6 +159,17 @@ class CheckController extends Controller
 		}
 		else{
 		return $this->render('confirm_out');
+		}
+		}else{
+			if(isset($_POST["btnYes"])){
+		$query = Yii::$app->db->createCommand('Update timestamps set checkout = curtime() where date = curdate()')->execute();
+		return $this->redirect('index.php?r=check%2Fadmin');
+		}else if(isset($_POST["btnNo"])){
+		return $this->redirect('index.php?r=check%2Fadmin');
+		}
+		else{
+		return $this->render('confirm_out');
+		}
 		}
 	}
 }
